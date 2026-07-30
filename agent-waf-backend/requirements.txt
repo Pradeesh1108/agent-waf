@@ -1,0 +1,12 @@
+fastapi
+pydantic
+mangum
+boto3
+uvicorn
+pyyaml
+groq
+pytest
+httpx
+langchain-core
+langchain-groq
+langgraph

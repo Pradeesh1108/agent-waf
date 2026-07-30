@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Agent WAF palette */
+  --color-waf-bg: #070910;
+  --color-waf-surface: #0f131b;
+  --color-waf-surface-alt: #141924;
+  --color-waf-border: rgba(255, 255, 255, 0.08);
+  --color-waf-border-strong: rgba(255, 255, 255, 0.16);
+  --color-waf-text: #f4f6f8;
+  --color-waf-text-secondary: #9aa3b2;
+  --color-waf-text-muted: #6b7385;
+
+  --color-waf-teal: #2dd4bf;
+  --color-waf-coral: #fb7185;
+  --color-waf-amber: #f5a623;
+  --color-waf-indigo: #818cf8;
+
+  /* shadcn-style semantic tokens mapped onto the WAF theme */
+  --color-background: var(--color-waf-bg);
+  --color-foreground: var(--color-waf-text);
+  --color-card: var(--color-waf-surface);
+  --color-card-foreground: var(--color-waf-text);
+  --color-popover: var(--color-waf-surface);
+  --color-popover-foreground: var(--color-waf-text);
+  --color-primary: var(--color-waf-teal);
+  --color-primary-foreground: #06110f;
+  --color-secondary: var(--color-waf-surface-alt);
+  --color-secondary-foreground: var(--color-waf-text);
+  --color-muted: var(--color-waf-surface-alt);
+  --color-muted-foreground: var(--color-waf-text-muted);
+  --color-accent: var(--color-waf-surface-alt);
+  --color-accent-foreground: var(--color-waf-text);
+  --color-destructive: var(--color-waf-coral);
+  --color-border: var(--color-waf-border);
+  --color-input: var(--color-waf-border);
+  --color-ring: var(--color-waf-teal);
+  --radius: 0.75rem;
+}
+
+* {
+  border-color: var(--color-waf-border);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-waf-bg);
+  color: var(--color-waf-text);
+  font-family: var(--font-body);
+}
+
+.waf-cursor-none,
+.waf-cursor-none * {
+  cursor: none !important;
+}
+
+@keyframes waf-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes waf-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.4);
+  }
+}
+
+.waf-grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+}

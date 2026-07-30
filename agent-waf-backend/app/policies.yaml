@@ -1,0 +1,36 @@
+rules:
+  - name: rate_limit_send_email
+    type: rate_limit
+    tool: send_email
+    window_seconds: 60
+    max_calls: 3
+    shadow: false
+
+  - name: blocklist_sql_injection
+    type: param_blocklist
+    patterns:
+      - "(?i)(SELECT|INSERT|UPDATE|DELETE|DROP).*?;?"
+      - "(?i)OR\\s+1=1"
+    max_length: 500
+    shadow: false
+
+  - name: scope_data_access
+    type: data_scope
+    tools: 
+      - get_customer_record
+    id_params:
+      - customer_id
+    shadow: false
+
+  - name: enforce_sequence
+    type: sequence
+    tool: refund_payment
+    depends_on: get_customer_record
+    shadow: false
+    
+  - name: shadow_rate_limit_query
+    type: rate_limit
+    tool: run_query
+    window_seconds: 60
+    max_calls: 1
+    shadow: true
