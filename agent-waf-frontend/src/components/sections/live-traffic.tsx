@@ -1,7 +1,10 @@
-import { ScanLine, CircleDot } from "lucide-react";
+import { ScanLine, CircleDot, Play, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { RULE_MAP, timeAgo } from "@/lib/mock-data";
 import type { ToolCallEvent } from "@/types";
+import { useState } from "react";
+import { runScriptedDemo, runAgenticDemo } from "@/lib/demo-runner";
 
 interface LiveTrafficProps {
   events: ToolCallEvent[];
@@ -10,14 +13,57 @@ interface LiveTrafficProps {
 }
 
 export function LiveTraffic({ events, blockedFeed, now }: LiveTrafficProps) {
+  const [isRunningScripted, setIsRunningScripted] = useState(false);
+  const [isRunningAgentic, setIsRunningAgentic] = useState(false);
+
+  const handleRunScripted = async () => {
+    setIsRunningScripted(true);
+    const apiKey = import.meta.env.VITE_WAF_API_KEY || "super-secret-key";
+    const baseUrl = import.meta.env.VITE_WAF_URL || "https://yq2kv5vkf6.execute-api.us-east-1.amazonaws.com";
+    await runScriptedDemo(baseUrl, apiKey);
+    setIsRunningScripted(false);
+  };
+
+  const handleRunAgentic = async () => {
+    setIsRunningAgentic(true);
+    const apiKey = import.meta.env.VITE_WAF_API_KEY || "super-secret-key";
+    const baseUrl = import.meta.env.VITE_WAF_URL || "https://yq2kv5vkf6.execute-api.us-east-1.amazonaws.com";
+    await runAgenticDemo(baseUrl, apiKey);
+    setIsRunningAgentic(false);
+  };
+
   return (
     <section id="live-traffic" className="border-t border-waf-border px-4 md:px-8 py-20">
-      <div className="mb-1 flex items-center gap-2">
-        <span
-          className="inline-block h-2 w-2 rounded-full bg-waf-teal"
-          style={{ animation: "waf-pulse 1.6s ease-in-out infinite" }}
-        />
-        <h2 className="font-display text-2xl font-semibold">Live traffic</h2>
+      <div className="mb-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block h-2 w-2 rounded-full bg-waf-teal"
+            style={{ animation: "waf-pulse 1.6s ease-in-out infinite" }}
+          />
+          <h2 className="font-display text-2xl font-semibold">Live traffic</h2>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs" 
+            onClick={handleRunScripted}
+            disabled={isRunningScripted || isRunningAgentic}
+          >
+            {isRunningScripted ? <Loader2 size={12} className="mr-2 animate-spin" /> : <Play size={12} className="mr-2" />}
+            Run Scripted Demo
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs" 
+            onClick={handleRunAgentic}
+            disabled={isRunningScripted || isRunningAgentic}
+          >
+            {isRunningAgentic ? <Loader2 size={12} className="mr-2 animate-spin" /> : <Play size={12} className="mr-2" />}
+            Run Agentic Demo
+          </Button>
+        </div>
       </div>
       <p className="mb-8 mt-1 text-sm text-waf-text-muted">
         Simulated feed — every call is logged with agent, tool, rule outcome, and disposition.
