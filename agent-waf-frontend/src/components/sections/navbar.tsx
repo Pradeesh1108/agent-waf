@@ -29,7 +29,11 @@ export function Navbar() {
         ))}
       </div>
 
-      <Button size="default" {...deployHover}>
+      <Button 
+        size="default" 
+        {...deployHover} 
+        onClick={() => window.open("https://github.com/Pradeesh1108/agent-waf", "_blank")}
+      >
         Deploy <ArrowRight size={14} />
       </Button>
     </nav>
