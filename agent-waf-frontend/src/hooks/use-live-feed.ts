@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { randomEvent } from "@/lib/mock-data";
 import type { ToolCallEvent, LiveFeedTotals } from "@/types";
 
@@ -24,7 +24,8 @@ export function useLiveFeed() {
     const fetchLogs = async () => {
       try {
         const apiKey = import.meta.env.VITE_WAF_API_KEY || "super-secret-key";
-        const res = await fetch("http://127.0.0.1:8000/logs?limit=50", {
+        const baseUrl = import.meta.env.VITE_WAF_URL || "http://127.0.0.1:8000";
+        const res = await fetch(`${baseUrl}/logs?limit=50`, {
           headers: { "X-WAF-API-Key": apiKey }
         });
         if (res.ok) {

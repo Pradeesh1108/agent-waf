@@ -28,9 +28,9 @@ rules:
     depends_on: get_customer_record
     shadow: false
     
-  - name: shadow_rate_limit_query
+  - name: strict_rate_limit_query
     type: rate_limit
     tool: run_query
     window_seconds: 60
     max_calls: 1
-    shadow: true
+    shadow: false

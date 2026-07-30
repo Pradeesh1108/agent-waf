@@ -99,7 +99,7 @@ def invoke_tool(request: ToolCallRequest, api_key: str = Security(verify_api_key
 def health_check():
     status = {"status": "ok"}
     try:
-        if not state_manager._in_memory_logs and hasattr(state_manager, 'dynamodb'):
+        if hasattr(state_manager, 'dynamodb'):
             # It's using dynamodb
             state_manager.table.table_status
             status["dynamodb"] = "connected"

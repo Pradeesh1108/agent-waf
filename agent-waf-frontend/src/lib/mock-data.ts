@@ -66,7 +66,7 @@ export function randomEvent(): ToolCallEvent {
   };
 }
 
-export function timeAgo(ts: number, now: number): string {
+export function timeAgo(ts: number, _now: number): string {
   const d = new Date(ts);
   const hh = d.getHours().toString().padStart(2, '0');
   const mm = d.getMinutes().toString().padStart(2, '0');
