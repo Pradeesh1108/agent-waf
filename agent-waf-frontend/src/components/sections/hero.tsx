@@ -36,10 +36,19 @@ export function Hero({ totals, blockRate }: HeroProps) {
           directly between an agent's decision and a tool's execution.
         </p>
         <div className="mt-8 flex gap-4">
-          <Button size="lg" {...primaryCta}>
+          <Button 
+            size="lg" 
+            {...primaryCta}
+            onClick={() => document.getElementById("live-traffic")?.scrollIntoView({ behavior: "smooth" })}
+          >
             View live traffic
           </Button>
-          <Button size="lg" variant="outline" {...secondaryCta}>
+          <Button 
+            size="lg" 
+            variant="outline" 
+            {...secondaryCta}
+            onClick={() => document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth" })}
+          >
             Read the architecture
           </Button>
         </div>

@@ -18,11 +18,8 @@ export function useLiveFeed() {
   const [events, setEvents] = useState<ToolCallEvent[]>(() => [randomEvent()]);
   const [totals, setTotals] = useState<LiveFeedTotals>({ total: 1, blocked: 0 });
   const [now, setNow] = useState(Date.now());
-  const initial = useRef(true);
 
   useEffect(() => {
-    if (!initial.current) return;
-    initial.current = false;
 
     const fetchLogs = async () => {
       try {

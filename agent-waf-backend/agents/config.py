@@ -7,6 +7,18 @@ All agents import from here so switching providers is a one-line change.
 
 import os
 
+# ── Load .env automatically if it exists ──────────────────────────────
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+if os.path.exists(env_path):
+    with open(env_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                try:
+                    key, val = line.strip().split('=', 1)
+                    os.environ.setdefault(key, val.strip('"\''))
+                except ValueError:
+                    pass
+
 # ── LLM Provider ────────────────────────────────────────────────────
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")

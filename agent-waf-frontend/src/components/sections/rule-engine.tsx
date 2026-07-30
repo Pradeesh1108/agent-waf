@@ -52,12 +52,11 @@ export function RuleEngine() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2" {...toggleHover}>
+                <div className="flex items-center gap-2 text-xs" {...toggleHover}>
                   <span
-                    className="text-xs"
-                    style={{ color: isShadow ? "var(--color-waf-amber)" : "var(--color-waf-teal)" }}
+                    className={`transition-colors ${!isShadow ? "text-waf-teal font-medium" : "text-waf-text-muted opacity-50"}`}
                   >
-                    {isShadow ? "Shadow" : "Enforce"}
+                    Enforce
                   </span>
                   <Switch
                     checked={isShadow}
@@ -65,6 +64,11 @@ export function RuleEngine() {
                       setShadowMode((prev) => ({ ...prev, [rule.key]: checked }))
                     }
                   />
+                  <span
+                    className={`transition-colors ${isShadow ? "text-waf-amber font-medium" : "text-waf-text-muted opacity-50"}`}
+                  >
+                    Shadow
+                  </span>
                 </div>
               </div>
               <p className="mt-4 text-xs text-waf-text-secondary">{rule.description}</p>

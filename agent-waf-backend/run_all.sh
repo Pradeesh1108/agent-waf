@@ -16,7 +16,7 @@ else
     source .venv/bin/activate
 fi
 
-uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log &
 BACKEND_PID=$!
 
 # Wait a moment for the backend to start

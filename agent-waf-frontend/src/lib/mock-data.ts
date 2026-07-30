@@ -67,8 +67,10 @@ export function randomEvent(): ToolCallEvent {
 }
 
 export function timeAgo(ts: number, now: number): string {
-  const s = Math.max(0, Math.floor((now - ts) / 1000));
-  if (s < 1) return "just now";
-  if (s < 60) return `${s}s ago`;
-  return `${Math.floor(s / 60)}m ago`;
+  const d = new Date(ts);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  const ss = d.getSeconds().toString().padStart(2, '0');
+  const ms = d.getMilliseconds().toString().padStart(3, '0');
+  return `${hh}:${mm}:${ss}.${ms}`;
 }
