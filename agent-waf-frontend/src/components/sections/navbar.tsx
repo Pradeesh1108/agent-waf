@@ -10,7 +10,7 @@ export function Navbar() {
   const linkHover = useCursorHover("view");
 
   return (
-    <nav className="relative z-10 flex items-center justify-between border-b border-waf-border px-8 py-5">
+    <nav className="relative z-10 flex items-center justify-between border-b border-waf-border px-4 md:px-8 py-5">
       <div className="flex items-center gap-2" {...brandHover}>
         <Radar size={20} className="text-waf-teal" />
         <span className="font-display text-lg font-semibold">Agent WAF</span>

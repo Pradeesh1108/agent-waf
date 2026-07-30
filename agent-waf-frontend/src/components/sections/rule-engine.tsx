@@ -26,19 +26,19 @@ export function RuleEngine() {
   const toggleHover = useCursorHover("toggle");
 
   return (
-    <section id="rule-engine" className="border-t border-waf-border px-8 py-20">
+    <section id="rule-engine" className="border-t border-waf-border px-4 md:px-8 py-20">
       <h2 className="font-display text-2xl font-semibold">Rule engine</h2>
       <p className="mb-8 mt-1 text-sm text-waf-text-muted">
         Each rule runs independently in enforce or shadow mode.
       </p>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {RULES.map((rule) => {
           const Icon = RULE_ICONS[rule.key];
           const isShadow = shadowMode[rule.key];
           return (
             <SpotlightCard key={rule.key} className="p-6">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0">
                 <div className="flex items-center gap-3" {...ruleHover}>
                   <div
                     className="rounded-lg p-2"

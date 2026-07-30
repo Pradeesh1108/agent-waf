@@ -14,7 +14,7 @@ export function Hero({ totals, blockRate }: HeroProps) {
   const secondaryCta = useCursorHover("view");
 
   return (
-    <section className="waf-grid-bg relative overflow-hidden px-8 pb-20 pt-24">
+    <section className="waf-grid-bg relative overflow-hidden px-4 md:px-8 pb-20 pt-24">
       <div
         className="pointer-events-none absolute left-0 right-0 h-24"
         style={{
@@ -25,17 +25,17 @@ export function Hero({ totals, blockRate }: HeroProps) {
 
       <div className="relative max-w-3xl">
         <Badge className="mb-6">Policy-enforcing proxy for agent tool calls</Badge>
-        <h1 className="font-display text-5xl font-bold leading-tight md:text-6xl">
+        <h1 className="font-display text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
           Every tool call.
           <br />
           Inspected, every time.
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-waf-text-secondary">
+        <p className="mt-6 max-w-xl text-base md:text-lg text-waf-text-secondary">
           A WAF was never built for agents. This is the missing inspection layer: rate
           limits, parameter validation, data scope, and call-order enforcement, sitting
           directly between an agent's decision and a tool's execution.
         </p>
-        <div className="mt-8 flex gap-4">
+        <div className="mt-8 flex flex-col sm:flex-row gap-4">
           <Button 
             size="lg" 
             {...primaryCta}

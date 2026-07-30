@@ -9,7 +9,7 @@ export function Pipeline() {
   const stageHover = useCursorHover("stage");
 
   return (
-    <section id="pipeline" className="px-8 py-20">
+    <section id="pipeline" className="px-4 md:px-8 py-20">
       <h2 className="font-display text-2xl font-semibold">How a call gets inspected</h2>
       <p className="mb-8 mt-1 text-sm text-waf-text-muted">
         Five stages between an agent's decision and a tool actually running.

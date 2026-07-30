@@ -11,7 +11,7 @@ interface LiveTrafficProps {
 
 export function LiveTraffic({ events, blockedFeed, now }: LiveTrafficProps) {
   return (
-    <section id="live-traffic" className="border-t border-waf-border px-8 py-20">
+    <section id="live-traffic" className="border-t border-waf-border px-4 md:px-8 py-20">
       <div className="mb-1 flex items-center gap-2">
         <span
           className="inline-block h-2 w-2 rounded-full bg-waf-teal"
@@ -33,30 +33,32 @@ export function LiveTraffic({ events, blockedFeed, now }: LiveTrafficProps) {
 
 function TrafficTable({ events, now }: { events: ToolCallEvent[]; now: number }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-waf-border bg-waf-surface lg:col-span-2">
-      <div className="grid grid-cols-4 border-b border-waf-border px-5 py-3 text-xs uppercase tracking-wide text-waf-text-muted">
-        <span>Agent</span>
-        <span>Tool</span>
-        <span>Rule</span>
-        <span className="text-right">Disposition</span>
-      </div>
-      {events.map((e) => (
-        <div
-          key={e.id}
-          className="grid grid-cols-4 items-center border-b border-waf-border/60 px-5 py-3 font-mono text-xs last:border-b-0"
-        >
-          <span className="text-waf-text-secondary">{e.agent}</span>
-          <span>{e.tool}</span>
-          <span style={{ color: e.rule ? RULE_MAP[e.rule].color : "var(--color-waf-text-muted)" }}>
-            {e.rule ? RULE_MAP[e.rule].label : "—"}
-          </span>
-          <span className="text-right">
-            <Badge variant={e.disposition === "block" ? "block" : "default"}>
-              {e.disposition} · {timeAgo(e.ts, now)}
-            </Badge>
-          </span>
+    <div className="overflow-x-auto rounded-xl border border-waf-border bg-waf-surface lg:col-span-2">
+      <div className="min-w-[600px]">
+        <div className="grid grid-cols-4 border-b border-waf-border px-5 py-3 text-xs uppercase tracking-wide text-waf-text-muted">
+          <span>Agent</span>
+          <span>Tool</span>
+          <span>Rule</span>
+          <span className="text-right">Disposition</span>
         </div>
-      ))}
+        {events.map((e) => (
+          <div
+            key={e.id}
+            className="grid grid-cols-4 items-center border-b border-waf-border/60 px-5 py-3 font-mono text-xs last:border-b-0"
+          >
+            <span className="text-waf-text-secondary truncate pr-2">{e.agent}</span>
+            <span className="truncate pr-2">{e.tool}</span>
+            <span style={{ color: e.rule ? RULE_MAP[e.rule].color : "var(--color-waf-text-muted)" }}>
+              {e.rule ? RULE_MAP[e.rule].label : "—"}
+            </span>
+            <span className="text-right">
+              <Badge variant={e.disposition === "block" ? "block" : "default"}>
+                {e.disposition} · {timeAgo(e.ts, now)}
+              </Badge>
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
