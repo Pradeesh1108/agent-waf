@@ -24,7 +24,7 @@ export function useLiveFeed() {
     const fetchLogs = async () => {
       try {
         const apiKey = import.meta.env.VITE_WAF_API_KEY || "super-secret-key";
-        const baseUrl = import.meta.env.VITE_WAF_URL || "http://127.0.0.1:8000";
+        const baseUrl = import.meta.env.VITE_WAF_URL || "https://yq2kv5vkf6.execute-api.us-east-1.amazonaws.com";
         const res = await fetch(`${baseUrl}/logs?limit=50`, {
           headers: { "X-WAF-API-Key": apiKey }
         });
