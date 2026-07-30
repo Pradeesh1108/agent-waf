@@ -6,142 +6,112 @@
 
 *A production-grade, policy-enforcing proxy between AI agents and their tools that transparently inspects, filters, and logs every tool invocation in real time.*
 
+**🌐 Live Demo:** [https://agent-waf.pradeeshs.dev](https://agent-waf.pradeeshs.dev)
+
 ![Python](https://img.shields.io/badge/python-3.12+-blue?style=flat-square)
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)
-![Groq](https://img.shields.io/badge/Groq-F55036?style=flat-square)
+![AWS](https://img.shields.io/badge/AWS-Serverless-FF9900?style=flat-square&logo=amazonaws)
 ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
-![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
-![uv](https://img.shields.io/badge/uv-DE5FE9?style=flat-square)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=flat-square&logo=vercel)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
 
 </div>
 
+## 📖 Problem Statement
 
-## Problem Statement
+AI Agents are rapidly gaining autonomy, capable of invoking tools, accessing databases, and performing actions on behalf of users. However, current Web Application Firewalls (WAFs) are built exclusively for traditional HTTP REST APIs. They rely on network-level heuristics (like IP rate-limiting or payload matching) and are completely blind to the intent and context of an AI agent's tool invocations. 
 
-### Context
-AI Agents are rapidly gaining autonomy, capable of invoking tools, accessing databases, and performing actions on behalf of users. However, current Web Application Firewalls (WAFs) are built exclusively for traditional HTTP REST APIs. They rely on network-level heuristics (like IP rate-limiting or payload matching) and are completely blind to the intent and context of an AI agent's tool invocations. This leaves organizations without a robust, intent-aware security layer to verify if an agent is allowed to access specific data scopes, call tools in a specific sequence, or if they are executing dangerous, hallucinated parameters. 
+This leaves organizations without a robust, intent-aware security layer to verify if an agent is allowed to access specific data scopes, call tools in a specific sequence, or if they are executing dangerous, hallucinated parameters. 
 
-### The Challenge
-Build a policy-enforcing proxy between AI agents and their tools that transparently inspects, filters, and logs every tool invocation in real time based on declarative security rules.
+## 🚀 Core Features (Hackathon Requirements)
 
-### What to Build
-- A transparent proxy layer that intercepts all tool calls from a sample agent.
-- A rule engine with at least these rule types: 
-  - **Rate limit:** Agent may call Tool X no more than N times per minute.
-  - **Parameter validation:** Reject calls where parameter values match a blocklist or exceed size limits.
-  - **Data scope:** Reject calls that reference data outside the agent's declared scope.
-  - **Sequence rules:** Reject calls to Tool B unless Tool A was called first in this session.
-- Each intercepted call is logged with timestamp, agent ID, tool, parameters sanitised, rule evaluation outcome, and final disposition.
-- A real-time dashboard showing tool call traffic and block events.
+We successfully implemented a fully functional WAF proxy that acts as an impenetrable shield between an agent's brain and its tools. It rigorously enforces 5 core success criteria:
 
-### Success Criteria
-- [x] Rate limit fires correctly after N calls within the window.
-- [x] Parameter blocklist catches a simulated injection attempt in a tool parameter.
-- [x] Out-of-scope data access is blocked.
-- [x] Sequence rule enforcement correctly blocks a tool called out of expected order.
-- [x] Dashboard updates in real time as calls flow through.
+- ✅ **Stateful Rate Limiting:** Prevents agents from endlessly looping or spamming APIs (e.g., *Agent may call Tool X no more than 3 times per 60 seconds*).
+- ✅ **Parameter Validation & Blocklists:** Intercepts deeply nested, hallucinated, or malicious arguments (e.g., catching a `DROP TABLE` SQL injection payload embedded in an LLM query).
+- ✅ **Data Scope Enforcement:** Strictly sandboxes agents to their authorized partitions (e.g., preventing an agent from looking up `cust_UNAUTHORIZED` when it only holds a token for `cust_123`).
+- ✅ **Sequence Verification:** Enforces strict execution state machines (e.g., blocking `refund_payment` if the agent failed to execute `get_customer_record` first).
+- ✅ **Shadow Mode:** A critical enterprise feature that silently evaluates traffic, logging violations without actively disrupting the agent's live execution (perfect for testing new rules!).
 
 ---
 
-## What We Have Done (Case Study)
+## ☁️ Production Readiness & Architecture
 
-For this hackathon, we built a fully functional, production-ready **Agent WAF Microservice Architecture**, strictly decoupling the frontend dashboard from the backend rule engine to demonstrate scalability. 
+To maximize the **Production Readiness** criteria, we took this project beyond a simple localhost script and deployed a highly scalable, serverless architecture into the cloud.
 
-### 1. The Proxy Architecture
-We developed a transparent proxy layer in FastAPI that sits exactly between the LangChain/LangGraph agent execution environment and the downstream Tool Registry. The agent uses `@tool` wrappers that do not execute code locally, but instead serialize the LLM's intent into an HTTP POST request to the WAF. The WAF evaluates the request against `policies.yaml` and only forwards it to the execution registry if all rules pass.
+### 1. AWS Serverless Backend
+We packaged the FastAPI WAF engine using AWS SAM and deployed it entirely serverless using **AWS API Gateway** and **AWS Lambda**. This ensures the WAF proxy can handle thousands of concurrent agent requests effortlessly without ever paying for idle servers.
 
-### 2. The Rule Engine
-The core of the WAF is the dynamic rule engine supporting:
-*   **Rate Limiting**: Sliding window counters per tool.
-*   **Parameter Blocklists**: Regex evaluations to instantly block SQL injections (e.g. `1 OR 1=1; DROP TABLE`).
-*   **Data Scoping**: Validates if the agent is authorized to access the specific `customer_id` it requested.
-*   **Sequence Enforcement**: Maintains session state to ensure prerequisites (e.g. `get_customer_record` MUST be called before `refund_payment`).
-*   **Shadow Mode**: A critical enterprise feature where a rule can be toggled to `shadow: true`. This allows the WAF to silently log rule violations without actually blocking the live agent, enabling safe testing of new policies in production!
+### 2. Persistent State with DynamoDB
+A WAF is only as good as its memory. We migrated the in-memory array logs and sliding-window rate counters into a persistent **Amazon DynamoDB** NoSQL table. The WAF dynamically routes telemetry and session sequencing histories to the cloud, ensuring state survives across millions of Lambda invocations.
 
-### 3. Real-Time Dashboard
-We built a beautiful, dark-mode React/Vite dashboard to visualize the WAF's activity. The dashboard actively polls the backend and renders high-precision (millisecond) absolute timestamps to perfectly trace rapid, sequential LLM tool calls. The UI explicitly visualizes the rule configurations (Enforce vs Shadow mode) and graphs real-time blocked vs allowed traffic.
+### 3. Hot-Reloading Policy Engine
+Our `policies.yaml` rule engine was designed to be highly dynamic. Rules can be updated on the fly to instantly adapt to new LLM threat vectors without ever restarting the WAF or dropping active agent requests.
 
-### 4. Agent Simulation
-To prove the WAF works in an actual AI environment, we utilized **LangGraph** to build a multi-agent orchestrator. A Supervisor agent routes user prompts to specialized workers (e.g., a Customer Service Agent and a Security Tester Agent). These agents use the Groq API to reason about the user's prompt and invoke tools, which are seamlessly intercepted by our WAF.
+### 4. Real-Time Vercel Dashboard
+We built a gorgeous, mobile-responsive dark-mode React dashboard to monitor the telemetry of the WAF. It is globally deployed on Vercel and dynamically polls the live AWS backend, visualizing intercepts, traffic metrics, and rule evaluations in real time.
 
-### Architecture Diagram
+---
+
+## 🏗️ Architecture Diagram
 
 ```mermaid
 graph TD
-    subgraph "Agentic Layer (LangGraph + Groq)"
-        Supervisor["Supervisor Agent"]
-        CSAgent["Customer Service Agent"]
-        STAgent["Security Tester Agent"]
-        
-        Supervisor --> CSAgent
-        Supervisor --> STAgent
+    subgraph "Agentic Layer"
+        Agent["Autonomous Agent (LangGraph/LLM)"]
     end
 
-    subgraph "WAF Proxy (FastAPI)"
-        Proxy["POST /invoke"]
-        RuleEngine["Rule Engine / policies.yaml"]
-        State["State Manager / Audit Logs"]
+    subgraph "AWS Cloud (Serverless)"
+        Gateway["API Gateway"]
+        Lambda["AWS Lambda (WAF Proxy)"]
+        Dynamo["DynamoDB (State & Logs)"]
         
-        Proxy --> RuleEngine
-        RuleEngine --> State
+        Gateway --> Lambda
+        Lambda <--> |Validates State/Sequence| Dynamo
     end
 
     subgraph "Execution Layer"
-        Tools["Tool Registry (Actual execution)"]
+        Tools["Tool Registry (Actual Execution)"]
     end
     
-    subgraph "Frontend (React/Vite)"
-        Dashboard["Real-time Dashboard"]
-        LogsAPI["GET /logs"]
+    subgraph "Vercel Edge Network"
+        Dashboard["React Real-time Dashboard"]
         
-        Dashboard -- "Polls every 1.4s" --> LogsAPI
+        Dashboard -- "Polls Live Telemetry" --> Gateway
     end
 
-    CSAgent -- "Tool Calls" --> Proxy
-    STAgent -- "Malicious Calls" --> Proxy
+    Agent -- "Tool Calls" --> Gateway
     
-    RuleEngine -- "Allowed" --> Tools
-    RuleEngine -- "Blocked (403)" --> Proxy
-    
-    State --> LogsAPI
+    Lambda -- "Allowed (200)" --> Tools
+    Lambda -- "Blocked (403)" --> Agent
 ```
 
 ---
 
-## Quick Start
+## 💻 How to Run the Demo
 
-### 1. Setup Environment
-```bash
-uv venv
-source .venv/bin/activate
-uv pip install -r agent-waf-backend/requirements.txt
-```
+Want to see the WAF intercepting traffic in real-time? You don't even need to spin up the backend—it's already live in the cloud!
 
-### 2. Add API Keys
-Copy `.env.example` to `.env` and add your Groq API key:
-```bash
-cp .env.example .env
-# Edit .env and add GROQ_API_KEY
-```
+### 1. View the Live Dashboard
+Open the public frontend to watch the traffic stream in:
+👉 **[https://agent-waf.pradeeshs.dev](https://agent-waf.pradeeshs.dev)**
 
-### 3. Run the Full Stack
-We have provided a unified script to run both the FastAPI backend and the React frontend simultaneously:
+### 2. Run the Scripted Agent Tests
+Clone this repository and run the pre-built demo script that fires 5 distinct test cases (Rate limit, Parameter block, Scope breach, Sequence break, and Shadow mode) directly at the cloud API:
+
 ```bash
+# 1. Enter the backend directory
 cd agent-waf-backend
-./run_all.sh
+
+# 2. Run the demo against the live WAF
+PYTHONPATH=. python -m agents.demo --demo
 ```
 
-### 4. View the Dashboard
-Open your browser to: [http://localhost:5173](http://localhost:5173)
+Watch your terminal and the live website dashboard to see the WAF intercept and block the malicious agent calls!
 
-### 5. Trigger the AI Agents
-While the dashboard is running, open a new terminal and run the agentic demo to see the WAF block the LLM in real-time:
-```bash
-cd agent-waf-backend
-source .venv/bin/activate
-PYTHONPATH=. python -m agents.demo --agentic
-```
+---
+
+## 👨‍💻 Contributors
+
+- **Pradeesh S** - *Architecture, Cloud Deployment & Frontend UI*
