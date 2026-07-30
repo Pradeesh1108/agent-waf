@@ -33,7 +33,7 @@ export function LiveTraffic({ events, blockedFeed, now }: LiveTrafficProps) {
 
 function TrafficTable({ events, now }: { events: ToolCallEvent[]; now: number }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-waf-border bg-waf-surface lg:col-span-2">
+    <div className="overflow-x-auto min-w-0 rounded-xl border border-waf-border bg-waf-surface lg:col-span-2">
       <div className="min-w-[600px]">
         <div className="grid grid-cols-4 border-b border-waf-border px-5 py-3 text-xs uppercase tracking-wide text-waf-text-muted">
           <span>Agent</span>

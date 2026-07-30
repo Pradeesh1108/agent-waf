@@ -12,7 +12,7 @@ function AppShell() {
   const { events, totals, now, blockRate, blockedFeed } = useLiveFeed();
 
   return (
-    <div className="waf-cursor-none min-h-screen w-full bg-waf-bg text-waf-text">
+    <div className="waf-cursor-none min-h-screen w-full bg-waf-bg text-waf-text overflow-x-hidden">
       <CustomCursor />
       <Navbar />
       <Hero totals={totals} blockRate={blockRate} />
