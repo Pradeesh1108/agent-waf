@@ -1,12 +1,24 @@
+<div align="center">
+
+![Version](https://img.shields.io/badge/🛡️_AGENT_WAF-V1.0-blueviolet?style=for-the-badge)
+
 # Agent WAF
 
-## Tech Stack
-- **Backend:** FastAPI, Python (managed via `uv`), LangChain, LangGraph
-- **Frontend:** React, Vite, TailwindCSS
-- **State Management:** In-Memory (with DynamoDB support built-in for AWS)
-- **LLM Provider:** Groq API (Llama3-8b-8192)
+*A production-grade, policy-enforcing proxy between AI agents and their tools that transparently inspects, filters, and logs every tool invocation in real time.*
+
+![Python](https://img.shields.io/badge/python-3.12+-blue?style=flat-square)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)
+![Groq](https://img.shields.io/badge/Groq-F55036?style=flat-square)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
+![uv](https://img.shields.io/badge/uv-DE5FE9?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
+
+</div>
+
 
 ## Problem Statement
 
@@ -61,30 +73,30 @@ To prove the WAF works in an actual AI environment, we utilized **LangGraph** to
 ```mermaid
 graph TD
     subgraph "Agentic Layer (LangGraph + Groq)"
-        Supervisor[Supervisor Agent]
-        CSAgent[Customer Service Agent]
-        STAgent[Security Tester Agent]
+        Supervisor["Supervisor Agent"]
+        CSAgent["Customer Service Agent"]
+        STAgent["Security Tester Agent"]
         
         Supervisor --> CSAgent
         Supervisor --> STAgent
     end
 
     subgraph "WAF Proxy (FastAPI)"
-        Proxy[POST /invoke]
-        RuleEngine[Rule Engine / policies.yaml]
-        State[State Manager / Audit Logs]
+        Proxy["POST /invoke"]
+        RuleEngine["Rule Engine / policies.yaml"]
+        State["State Manager / Audit Logs"]
         
         Proxy --> RuleEngine
         RuleEngine --> State
     end
 
     subgraph "Execution Layer"
-        Tools[Tool Registry (Actual execution)]
+        Tools["Tool Registry (Actual execution)"]
     end
     
     subgraph "Frontend (React/Vite)"
-        Dashboard[Real-time Dashboard]
-        LogsAPI[GET /logs]
+        Dashboard["Real-time Dashboard"]
+        LogsAPI["GET /logs"]
         
         Dashboard -- "Polls every 1.4s" --> LogsAPI
     end
