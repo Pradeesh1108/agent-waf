@@ -16,10 +16,17 @@ from typing import Optional, List
 from langchain_core.tools import tool
 
 from .config import WAF_URL
+import os
+
+WAF_API_KEY = os.environ.get("WAF_API_KEY", "super-secret-key")
 
 # ── Internal HTTP helper ────────────────────────────────────────────
 
-_client = httpx.Client(base_url=WAF_URL, timeout=15.0)
+_client = httpx.Client(
+    base_url=WAF_URL,
+    timeout=15.0,
+    headers={"X-WAF-API-Key": WAF_API_KEY}
+)
 
 # We store the current agent context in a module-level dict so tools
 # can read it.  This is set by the graph before each agent turn.

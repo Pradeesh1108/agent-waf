@@ -23,7 +23,10 @@ export function useLiveFeed() {
 
     const fetchLogs = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/logs?limit=50");
+        const apiKey = import.meta.env.VITE_WAF_API_KEY || "super-secret-key";
+        const res = await fetch("http://127.0.0.1:8000/logs?limit=50", {
+          headers: { "X-WAF-API-Key": apiKey }
+        });
         if (res.ok) {
           const data = await res.json();
           const fetchedLogs = data.logs || [];

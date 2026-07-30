@@ -5,15 +5,28 @@ from typing import List, Tuple
 from .models import ToolCallRequest, RuleResult
 from .state import state_manager
 
-# Load policies
-with open(os.path.join(os.path.dirname(__file__), "policies.yaml"), "r") as f:
-    POLICIES = yaml.safe_load(f)
+_policies_cache = {}
+_policies_mtime = 0
+
+def get_policies() -> dict:
+    global _policies_cache, _policies_mtime
+    path = os.path.join(os.path.dirname(__file__), "policies.yaml")
+    try:
+        mtime = os.path.getmtime(path)
+        if mtime > _policies_mtime:
+            with open(path, "r") as f:
+                _policies_cache = yaml.safe_load(f)
+            _policies_mtime = mtime
+    except Exception:
+        pass
+    return _policies_cache or {}
 
 def evaluate_rules(request: ToolCallRequest) -> Tuple[List[RuleResult], bool]:
     results = []
     should_block = False
 
-    for rule_def in POLICIES.get("rules", []):
+    policies = get_policies()
+    for rule_def in policies.get("rules", []):
         rule_type = rule_def.get("type")
         rule_name = rule_def.get("name")
         shadow = rule_def.get("shadow", False)

@@ -4,11 +4,21 @@ from mangum import Mangum
 from pydantic import ValidationError
 
 from .models import ToolCallRequest, InvokeResponse, RuleResult
-from .rules import evaluate_rules, POLICIES
+from .rules import evaluate_rules, get_policies
 from .state import state_manager
 from .tools import TOOL_REGISTRY
 from .logging_config import logger
 import os
+from fastapi import Security
+from fastapi.security import APIKeyHeader
+
+WAF_API_KEY = os.environ.get("WAF_API_KEY", "super-secret-key")
+api_key_header = APIKeyHeader(name="X-WAF-API-Key", auto_error=False)
+
+def verify_api_key(api_key: str = Security(api_key_header)):
+    if api_key != WAF_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing X-WAF-API-Key header")
+    return api_key
 
 app = FastAPI(title="Agent WAF")
 
@@ -20,7 +30,7 @@ app.add_middleware(
 )
 
 @app.post("/invoke", response_model=InvokeResponse)
-def invoke_tool(request: ToolCallRequest):
+def invoke_tool(request: ToolCallRequest, api_key: str = Security(verify_api_key)):
     try:
         rule_results, should_block = evaluate_rules(request)
         disposition = "block" if should_block else "allow"
@@ -44,7 +54,7 @@ def invoke_tool(request: ToolCallRequest):
                     state_manager.append_session_sequence(request.agent_id, request.session_id, request.tool)
                     
                     # Increment any rate limits defined for this tool
-                    for rule_def in POLICIES.get("rules", []):
+                    for rule_def in get_policies().get("rules", []):
                         if rule_def.get("type") == "rate_limit" and rule_def.get("tool") == request.tool:
                             window = rule_def.get("window_seconds", 60)
                             state_manager.increment_rate_count(request.agent_id, request.tool, window)
@@ -101,7 +111,7 @@ def health_check():
     return status
 
 @app.get("/logs")
-def get_logs(since: int = 0, limit: int = 100):
+def get_logs(since: int = 0, limit: int = 100, api_key: str = Security(verify_api_key)):
     try:
         logs = state_manager.get_recent_logs(since, limit)
         return {"logs": logs}
