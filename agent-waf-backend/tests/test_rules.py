@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.state import state_manager
 
-client = TestClient(app)
+client = TestClient(app, headers={"X-WAF-API-Key": "super-secret-key"})
 
 @pytest.fixture(autouse=True)
 def clear_state():
